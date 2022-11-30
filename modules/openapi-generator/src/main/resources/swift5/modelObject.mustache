@@ -119,4 +119,63 @@
         {{/allVars}}
         {{#generateModelAdditionalProperties}}{{#additionalPropertiesType}}hasher.combine(additionalProperties.hashValue){{/additionalPropertiesType}}{{/generateModelAdditionalProperties}}
     }{{/vendorExtensions.x-swift-hashable}}{{/useClasses}}{{/objcCompatible}}
+    {{#allVars}}
+    {{#hasValidation}}
+    {{#isString}}
+
+    public struct {{#lambda.titlecase}}{{{name}}}{{/lambda.titlecase}}Validator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                {{#minLength}}
+                case minLength
+                {{/minLength}}
+                {{#maxLength}}
+                case maxLength
+                {{/maxLength}}
+                {{#pattern}}
+                case pattern
+                {{/pattern}}
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+
+        {{#minLength}}
+        public static let minLength = {{.}}
+        {{/minLength}}
+        {{#maxLength}}
+        public static let maxLength = {{.}}
+        {{/maxLength}}
+        {{#pattern}}
+        public static let pattern = "{{.}}"
+        {{/pattern}}
+
+        public static func validate({{{name}}}: String) throws -> String {
+            var error = ValidationError(kinds: [])
+
+            {{#minLength}}
+            if {{{name}}}.count < minLength {
+                error.kinds.insert(.minLength)
+            }
+            {{/minLength}}
+            {{#maxLength}}
+            if {{{name}}}.count > maxLength {
+                error.kinds.insert(.maxLength)
+            }
+            {{/maxLength}}
+            {{#pattern}}
+            let matches = try NSRegularExpression(pattern: pattern, options: .caseInsensitive).matches(in: {{{name}}}, range: .init(location: 0, length: {{{name}}}.utf16.count))
+            if matches.isEmpty {
+                error.kinds.insert(.pattern)
+            }
+            {{/pattern}}
+
+            guard error.kinds.isEmpty else {
+                throw error
+            }
+            return {{{name}}}
+        }
+    }
+    {{/isString}}
+    {{/hasValidation}}
+    {{/allVars}}
 }

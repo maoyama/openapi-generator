@@ -33,5 +33,30 @@ public struct Category: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(id, forKey: .id)
         try container.encodeIfPresent(name, forKey: .name)
     }
+
+    public struct NameValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case pattern
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+
+        public static let pattern = "/^[a-zA-Z0-9]+[a-zA-Z0-9\\.\\-_]*[a-zA-Z0-9]+$/"
+
+        public static func validate(name: String) throws -> String {
+            var error = ValidationError(kinds: [])
+
+            let matches = try NSRegularExpression(pattern: pattern, options: .caseInsensitive).matches(in: name, range: .init(location: 0, length: name.utf16.count))
+            if matches.isEmpty {
+                error.kinds.insert(.pattern)
+            }
+
+            guard error.kinds.isEmpty else {
+                throw error
+            }
+            return name
+        }
+    }
 }
 

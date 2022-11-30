@@ -117,5 +117,59 @@ public final class FormatTest: Content, Hashable {
         hasher.combine(bigDecimal?.hashValue)
         
     }
+
+    public struct StringValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case pattern
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+
+        public static let pattern = "/[a-z]/i"
+
+        public static func validate(string: String) throws -> String {
+            var error = ValidationError(kinds: [])
+
+            let matches = try NSRegularExpression(pattern: pattern, options: .caseInsensitive).matches(in: string, range: .init(location: 0, length: string.utf16.count))
+            if matches.isEmpty {
+                error.kinds.insert(.pattern)
+            }
+
+            guard error.kinds.isEmpty else {
+                throw error
+            }
+            return string
+        }
+    }
+
+    public struct PasswordValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minLength
+                case maxLength
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+
+        public static let minLength = 10
+        public static let maxLength = 64
+
+        public static func validate(password: String) throws -> String {
+            var error = ValidationError(kinds: [])
+
+            if password.count < minLength {
+                error.kinds.insert(.minLength)
+            }
+            if password.count > maxLength {
+                error.kinds.insert(.maxLength)
+            }
+
+            guard error.kinds.isEmpty else {
+                throw error
+            }
+            return password
+        }
+    }
 }
 
