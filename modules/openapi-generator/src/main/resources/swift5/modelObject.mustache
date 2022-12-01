@@ -176,6 +176,25 @@
         }
     }
     {{/isString}}
+    {{#isNumeric}}
+
+    public struct {{#lambda.titlecase}}{{{name}}}{{/lambda.titlecase}}Validator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                {{#minimum}}
+                case minimum
+                {{/minimum}}
+                {{#maximum}}
+                case maximum
+                {{/maximum}}
+                {{#multipleOf}}
+                case multipleOf
+                {{/multipleOf}}
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+    {{/isNumeric}}
     {{/hasValidation}}
     {{/allVars}}
 }

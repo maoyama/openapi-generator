@@ -81,6 +81,56 @@ public struct FormatTest: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(bigDecimal, forKey: .bigDecimal)
     }
 
+    public struct IntegerValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minimum
+                case maximum
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+
+    public struct Int32Validator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minimum
+                case maximum
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+
+    public struct NumberValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minimum
+                case maximum
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+
+    public struct FloatValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minimum
+                case maximum
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+
+    public struct DoubleValidator {
+        public struct ValidationError: Error {
+            public enum ErrorKind: Error {
+                case minimum
+                case maximum
+            }
+            public fileprivate(set) var kinds: Set<ErrorKind>
+        }
+    }
+
     public struct StringValidator {
         public struct ValidationError: Error {
             public enum ErrorKind: Error {
